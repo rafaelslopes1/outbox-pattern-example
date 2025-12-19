@@ -12,11 +12,20 @@ datasource db {
   provider = "postgresql"
 }
 
+enum OrderStatus {
+  PENDING
+  PAID
+}
+
+enum EventType {
+  ORDER_CREATED
+  ORDER_PAID
+}
 
 model Orders {
   id         String   @id @default(uuid())
   amount     Int
-  status     String   @default("PENDING")
+  status     OrderStatus   @default(PENDING)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   
@@ -25,9 +34,9 @@ model Orders {
 
 model OutboxEvents {
   eventId      String    @id @default(uuid())
-  eventType    String
+  eventType    EventType
   orderId      String?
-  amount       Int
+  amount       Int?
   occurredAt   DateTime  @default(now())
   publishedAt  DateTime?
   failureCount Int       @default(0)
@@ -35,6 +44,13 @@ model OutboxEvents {
   
   @@index([publishedAt])
   @@map("outbox_events")
+}
+model ProcessedEvents {
+  eventId     String   @id
+  eventType   String
+  processedAt DateTime @default(now())
+  
+  @@map("processed_events")
 }
 
 model Invoices {
@@ -44,13 +60,4 @@ model Invoices {
   issuedAt   DateTime @default(now())
   
   @@map("invoices")
-}
-
-model ProcessedEvents {
-  eventId     String   @id
-  eventType   String
-  orderId     String
-  processedAt DateTime @default(now())
-  
-  @@map("processed_events")
 }
