@@ -1,0 +1,56 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+
+model Orders {
+  id         String   @id @default(uuid())
+  amount     Int
+  status     String   @default("PENDING")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  
+  @@map("orders")
+}
+
+model OutboxEvents {
+  eventId      String    @id @default(uuid())
+  eventType    String
+  orderId      String?
+  amount       Int
+  occurredAt   DateTime  @default(now())
+  publishedAt  DateTime?
+  failureCount Int       @default(0)
+  lastError    String?
+  
+  @@index([publishedAt])
+  @@map("outbox_events")
+}
+
+model Invoices {
+  id         String   @id @default(uuid())
+  orderId    String   @unique
+  amount     Int
+  issuedAt   DateTime @default(now())
+  
+  @@map("invoices")
+}
+
+model ProcessedEvents {
+  eventId     String   @id
+  eventType   String
+  orderId     String
+  processedAt DateTime @default(now())
+  
+  @@map("processed_events")
+}
