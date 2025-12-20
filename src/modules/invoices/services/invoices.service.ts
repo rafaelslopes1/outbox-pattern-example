@@ -22,7 +22,12 @@ export class InvoicesService implements OnModuleInit {
   onModuleInit() {
     this.logger.log('📬 InvoicesService subscrito ao evento ORDER_PAID');
     this.broker.subscribe('ORDER_PAID', (event) => {
-      void this.handleOrderPaid(event);
+      this.handleOrderPaid(event).catch((error) => {
+        this.logger.error(
+          `❌ Erro fatal ao processar evento ${event.eventId}: ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
+          error instanceof Error ? error.stack : undefined,
+        );
+      });
     });
   }
 
