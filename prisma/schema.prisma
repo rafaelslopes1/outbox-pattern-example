@@ -35,8 +35,8 @@ model Orders {
 model OutboxEvents {
   eventId      String    @id @default(uuid())
   eventType    EventType
-  orderId      String?
-  amount       Int?
+  orderId      String
+  amount       Int
   occurredAt   DateTime  @default(now())
   publishedAt  DateTime?
   failureCount Int       @default(0)
