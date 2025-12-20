@@ -1,6 +1,6 @@
-import { $Enums } from '@prisma/client';
+import { EventType as PrismaEventType } from '@prisma/client';
 
-export type EventType = $Enums.EventType;
+export type EventType = PrismaEventType;
 
 export type BrokerConfig = {
   simulateFailure: boolean; // Se está em modo de simulação de falha
@@ -10,5 +10,7 @@ export type BrokerConfig = {
 export type BrokerEvent = {
   eventId: string;
   eventType: EventType;
-  payload: any;
+  orderId: string;
+  amount: number;
+  occurredAt: Date;
 };

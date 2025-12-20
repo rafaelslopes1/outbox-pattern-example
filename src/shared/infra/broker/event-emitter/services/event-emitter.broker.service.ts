@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { EventEmitter } from 'events';
-import { BrokerConfig, BrokerEvent } from '../../types';
+import { BrokerConfig, BrokerEvent, EventType } from '../../types';
 
 @Injectable()
 export class BrokerService extends EventEmitter {
@@ -80,7 +80,7 @@ export class BrokerService extends EventEmitter {
   /**
    * Subscribe para eventos de um tipo específico
    */
-  subscribe(eventType: string, handler: (event: BrokerEvent) => void) {
+  subscribe(eventType: EventType, handler: (event: BrokerEvent) => void) {
     this.on(eventType, handler);
     this.logger.log(`👂 Subscriber registrado para evento: ${eventType}`);
   }
@@ -88,7 +88,7 @@ export class BrokerService extends EventEmitter {
   /**
    * Unsubscribe de eventos
    */
-  unsubscribe(eventType: string, handler: (event: BrokerEvent) => void) {
+  unsubscribe(eventType: EventType, handler: (event: BrokerEvent) => void) {
     this.off(eventType, handler);
     this.logger.log(`🔇 Subscriber removido para evento: ${eventType}`);
   }
@@ -100,7 +100,7 @@ export class BrokerService extends EventEmitter {
     return {
       eventTypes: this.eventNames(),
       totalListeners: this.eventNames().reduce(
-        (acc, name) => acc + this.listenerCount(name as string),
+        (acc, name) => acc + this.listenerCount(name as EventType),
         0,
       ),
       failureSimulation: this.getFailureSimulationStatus(),
