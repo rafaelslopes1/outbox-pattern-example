@@ -8,7 +8,15 @@ export abstract class OutboxEventsRepository {
     tx?: PrismaTransaction,
   ): Promise<OutboxEvents>;
 
-  abstract findUnpublished(maxRetries: number): Promise<OutboxEvents[]>;
+  /**
+   * Busca eventos não publicados (publishedAt = null)
+   * @param maxRetries Número máximo de tentativas
+   * @param limit Limite de eventos a buscar (para evitar sobrecarga de memória)
+   */
+  abstract findUnpublished(
+    maxRetries: number,
+    limit?: number,
+  ): Promise<OutboxEvents[]>;
 
   abstract markAsPublished(
     eventId: string,

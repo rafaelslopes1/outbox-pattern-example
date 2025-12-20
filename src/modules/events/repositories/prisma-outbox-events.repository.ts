@@ -30,11 +30,17 @@ export class PrismaOutboxEventsRepository implements OutboxEventsRepository {
 
   /**
    * Busca eventos não publicados (publishedAt = null)
+   * @param maxRetries Número máximo de tentativas
+   * @param limit Limite de eventos a buscar (para evitar sobrecarga de memória)
    */
-  async findUnpublished(maxRetries: number): Promise<OutboxEvents[]> {
+  async findUnpublished(
+    maxRetries: number,
+    limit?: number,
+  ): Promise<OutboxEvents[]> {
     return this.prisma.outboxEvents.findMany({
       where: { publishedAt: null, failureCount: { lt: maxRetries } },
       orderBy: { occurredAt: 'asc' },
+      take: limit,
     });
   }
 

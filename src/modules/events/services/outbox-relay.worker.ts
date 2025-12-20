@@ -9,8 +9,14 @@ export class OutboxRelayWorker implements OnModuleInit {
   private readonly logger = new Logger(OutboxRelayWorker.name);
   private isProcessing = false;
 
-  private readonly BATCH_SIZE = 10;
-  private readonly MAX_RETRIES = 5;
+  private readonly BATCH_SIZE = parseInt(
+    process.env.OUTBOX_BATCH_SIZE || '10',
+    10,
+  );
+  private readonly MAX_RETRIES = parseInt(
+    process.env.OUTBOX_MAX_RETRIES || '5',
+    10,
+  );
 
   constructor(
     private readonly outboxRepository: OutboxEventsRepository,
@@ -48,6 +54,7 @@ export class OutboxRelayWorker implements OnModuleInit {
   private async processUnpublishedEvents(): Promise<void> {
     const events = await this.outboxRepository.findUnpublished(
       this.MAX_RETRIES,
+      this.BATCH_SIZE,
     );
 
     if (events.length === 0) {
@@ -56,9 +63,7 @@ export class OutboxRelayWorker implements OnModuleInit {
 
     this.logger.log(`📬 Processando ${events.length} eventos pendentes`);
 
-    const batch = events.slice(0, this.BATCH_SIZE);
-
-    for (const event of batch) {
+    for (const event of events) {
       await this.publishEvent(event);
     }
   }
