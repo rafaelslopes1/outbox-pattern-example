@@ -21,8 +21,7 @@ export class OrdersService {
 
   async createOrder(params: CreateOrderData): Promise<Order> {
     const order = await this.ordersRepository.create(params);
-
-    this.logger.log(`Pedido ${order.id} criado com valor ${params.amount}`);
+    this.logger.log(`📝 Pedido ${order.id} criado`);
     return order;
   }
 
@@ -41,8 +40,6 @@ export class OrdersService {
   }
 
   async payOrder(orderId: string): Promise<PayOrderResult> {
-    this.logger.log(`Processando pagamento do pedido ${orderId}`);
-
     const order = await this.ordersRepository.findById(orderId);
 
     if (!order) {
@@ -74,9 +71,7 @@ export class OrdersService {
       return { order: updatedOrder, event };
     });
 
-    this.logger.log(
-      `✅ Pedido ${orderId} marcado como PAID e evento ${result.event.eventId} registrado na outbox`,
-    );
+    this.logger.log(`💳 Pedido ${orderId} marcado como PAID`);
 
     return result;
   }
