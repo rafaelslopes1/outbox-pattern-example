@@ -1,4 +1,4 @@
-# Teste Técnico — Outbox + Processamento Idempotente
+# Outbox + Processamento Idempotente
 
 Este repositório contém a implementação de um sistema de marketplace com **Transactional Outbox Pattern**, garantindo consistência eventual e processamento idempotente de eventos.
 
